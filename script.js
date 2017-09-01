@@ -11,9 +11,13 @@ const app = {
       `$${$('#salary').val()}`
     ];
   },
-  addRow(dataTable) {
+  sendToServer() {
     const formData = this.buildForm();
-    const addedRow = dataTable.row.add(formData).draw();
+    axios.post('http://localhost:2000/record', formData)
+      .then(response => console.log(response));
+  },
+  addRow(dataTable, data) {
+    const addedRow = dataTable.row.add(data).draw();
     addedRow.show().draw(false);
 
     const addedRowNode = addedRow.node();
@@ -44,12 +48,22 @@ const app = {
       ]
     });
 
-    $('#add').on('click', this.addRow.bind(this, dataTable));
+    $('#add').on('click', this.sendToServer.bind(this));
     const self = this;
     $('#realtime tbody').on('click', 'tr', function(){
       self.selectRow.bind(this, dataTable)();
     });
     $('#remove').on('click', this.removeRow.bind(this, dataTable));
+
+    // Pusher
+    var pusher = new Pusher('d90f998750290f316a0b', {
+      encrypted: true
+    });
+
+    var channel = pusher.subscribe('records');
+    channel.bind('new-record', (data) => {
+      this.addRow(dataTable, data);
+    });
   }
 };
 
