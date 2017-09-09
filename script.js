@@ -56,7 +56,8 @@ const app = {
     $('#remove').on('click', this.removeRow.bind(this, dataTable));
 
     // Pusher
-    var pusher = new Pusher('d90f998750290f316a0b', {
+    var pusher = new Pusher('App Key', {
+      cluster: 'CLUSTER',
       encrypted: true
     });
 
